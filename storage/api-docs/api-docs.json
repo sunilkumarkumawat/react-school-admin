@@ -1,0 +1,1875 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API Documentation",
+        "description": "This is the API documentation for our application",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost/dreamsakha-admin/public"
+        }
+    ],
+    "paths": {
+        "/api": {},
+        "/api/getSetting": {
+            "get": {
+                "tags": [
+                    "Website HomePage"
+                ],
+                "summary": "Get application settings",
+                "description": "Fetches the application settings by ID. This retrieves settings related to the website, including details like logo, address, mobile number, email, and other important configuration data. Currently retrieves the record with ID 1, which contains the key settings for the application.",
+                "operationId": "9d3d8356a0188fd7b1796edec6b1043a",
+                "responses": {
+                    "200": {
+                        "description": "Successfully fetched settings",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data fetched successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "user_id": {
+                                                    "type": "integer",
+                                                    "example": 0
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "dreamsakha@gmail.com"
+                                                },
+                                                "mobile": {
+                                                    "type": "string",
+                                                    "example": "8209949186"
+                                                },
+                                                "login_slogan": {
+                                                    "type": "string",
+                                                    "example": "Innovate Together@Empower Your Potential@Unleash Your Creativity@Login to Lead@Code. Connect. Create@Your Gateway to Innovation@Collaborate and Conquer@Where Ideas Take Flight@Enter the Realm of Possibilities@Together We Build Tomorrow"
+                                                },
+                                                "mini_logo": {
+                                                    "type": "string",
+                                                    "example": "1732280480674080a0433d3title_logo.png"
+                                                },
+                                                "facebook_link": {
+                                                    "type": "string",
+                                                    "example": "https://www.facebook.com/RukmaniSoftware"
+                                                },
+                                                "youtube_link": {
+                                                    "type": "string",
+                                                    "example": "https://www.youtube.com/channel/UCDt5l0MZezfslvsHzREMsSQ"
+                                                },
+                                                "twitter_link": {
+                                                    "type": "string",
+                                                    "example": "https://x.com/Sunilku21007475"
+                                                },
+                                                "instagram_link": {
+                                                    "type": "string",
+                                                    "example": "https://www.instagram.com/rukmanisoftware"
+                                                },
+                                                "address": {
+                                                    "type": "string",
+                                                    "example": "Sumer Nagar Mangywas,Near Guddu Paradise"
+                                                },
+                                                "pincode": {
+                                                    "type": "string",
+                                                    "example": "302011"
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Dreamsakha"
+                                                },
+                                                "short_description": {
+                                                    "type": "string",
+                                                    "example": "The DITA short description is one device to achieve 'progressive disclosure' in topic-based writing, in the sense that title expands to short description, which expands to the topic itself as a user drills into information."
+                                                },
+                                                "long_description": {
+                                                    "type": "string",
+                                                    "example": "null"
+                                                },
+                                                "logo": {
+                                                    "type": "string",
+                                                    "example": "1732280480674080a043577mini_logo.png"
+                                                },
+                                                "footer_logo": {
+                                                    "type": "string",
+                                                    "example": "1732280480674080a043697footer_logo.png"
+                                                },
+                                                "playstore_link": {
+                                                    "type": "string",
+                                                    "example": "https://play.google.com/store/search?q=whatsapp&c=apps"
+                                                },
+                                                "appstore_link": {
+                                                    "type": "string",
+                                                    "example": "null"
+                                                },
+                                                "refer_earn": {
+                                                    "type": "string",
+                                                    "example": "html code"
+                                                },
+                                                "contact_us": {
+                                                    "type": "string",
+                                                    "example": "html code"
+                                                },
+                                                "about_us": {
+                                                    "type": "string",
+                                                    "example": "html code"
+                                                },
+                                                "privacy_policy": {
+                                                    "type": "string",
+                                                    "example": "html code"
+                                                },
+                                                "terms_and_conditions": {
+                                                    "type": "string",
+                                                    "example": "html code"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to fetch settings",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Internal server error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to fetch data"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/getTopSubLocalities": {
+            "post": {
+                "tags": [
+                    "Website HomePage"
+                ],
+                "summary": "Get sub-localities and project count by locality",
+                "description": "Fetches sub-localities under a specified locality along with the count of projects in each sub-locality.",
+                "operationId": "1652259dc9c3e9ea3329e17787576601",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "localityId": {
+                                        "description": "ID of the locality",
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully fetched sub-localities with project count",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data fetched successfully"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "SubLocality Name"
+                                                    },
+                                                    "project_count": {
+                                                        "type": "integer",
+                                                        "example": 5
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": "No sub-localities found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No sub-localities found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "localityId is required"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "An error occurred"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Internal server error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/getBanners": {
+            "post": {
+                "tags": [
+                    "Website HomePage"
+                ],
+                "summary": "Get banners by category",
+                "description": "Fetches active banners based on the provided categories ['buy','rent','commercial','plot','living']",
+                "operationId": "d5b5119fd3b8ed39f1009b0ca07adb19",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "category": {
+                                        "description": "Category of the banner",
+                                        "type": "string",
+                                        "example": "buy"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successfully fetched banners",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Banners fetched successfully"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "buy"
+                                                },
+                                                "image": {
+                                                    "type": "string",
+                                                    "example": "banner_image.jpg"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": "No banners found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No banners found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Category is required"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to fetch banners",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to fetch banners"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Internal server error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/getTestimonial": {
+            "get": {
+                "tags": [
+                    "Website HomePage"
+                ],
+                "summary": "Get Testimonials",
+                "description": "Fetches active testimonials based on status and user status. Returns name, image, rating, and description.",
+                "operationId": "570cbe315005a93afd6d5d398550db42",
+                "responses": {
+                    "200": {
+                        "description": "Data fetched successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data fetched successfully"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Rahul"
+                                                    },
+                                                    "image": {
+                                                        "type": "string",
+                                                        "example": null,
+                                                        "nullable": true
+                                                    },
+                                                    "rating": {
+                                                        "type": "integer",
+                                                        "example": 4
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "This for test"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": "No data found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No data found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "An error occurred while fetching the data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "An error occurred"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Internal server error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/getTopProjects": {
+            "get": {
+                "tags": [
+                    "Website HomePage"
+                ],
+                "summary": "Get Top Projects",
+                "description": "Fetches top-rated projects based on the 'Top_Projects' category. Includes project details, property images, configurations, sizes, amenities, and pricing.",
+                "operationId": "cf4c111ca7c04bc2bd596139dbb6034d",
+                "responses": {
+                    "200": {
+                        "description": "Successfully fetched top projects",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data fetched successfully"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "project_id": {
+                                                        "type": "integer",
+                                                        "example": 24
+                                                    },
+                                                    "project_name": {
+                                                        "type": "string",
+                                                        "example": "Rajdhani Enclave"
+                                                    },
+                                                    "builder_name": {
+                                                        "type": "string",
+                                                        "example": "Sez Builders"
+                                                    },
+                                                    "project_area": {
+                                                        "type": "string",
+                                                        "example": "9000"
+                                                    },
+                                                    "launch_date": {
+                                                        "type": "string",
+                                                        "format": "date",
+                                                        "example": "2025-01-16"
+                                                    },
+                                                    "project_rera_id": {
+                                                        "type": "string",
+                                                        "example": "2003/Raj034/2034"
+                                                    },
+                                                    "project_description": {
+                                                        "type": "string",
+                                                        "example": "A builder project description is a document that outlines the details of a construction project, including the project's goals, timeline, and budget. It also describes the people and resources involved in the project."
+                                                    },
+                                                    "project_logo": {
+                                                        "type": "string",
+                                                        "example": "https://dreamsakha.rusofterp.in/public/webimage/projectLogo/1737433534678f21be2de4clogo.png"
+                                                    },
+                                                    "locality_name": {
+                                                        "type": "string",
+                                                        "example": "Jaipur"
+                                                    },
+                                                    "sub_locality_name": {
+                                                        "type": "string",
+                                                        "example": "Vaishali Nagar"
+                                                    },
+                                                    "possession_date": {
+                                                        "type": "string",
+                                                        "format": "date",
+                                                        "example": "2025-01-01"
+                                                    },
+                                                    "configurations": {
+                                                        "type": "string",
+                                                        "example": "3 BHK Apartments"
+                                                    },
+                                                    "sizes": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string",
+                                                            "example": "2400"
+                                                        }
+                                                    },
+                                                    "pricing": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string",
+                                                            "example": "3400000.00"
+                                                        }
+                                                    },
+                                                    "amenities_names": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string",
+                                                            "example": "Cafeteria"
+                                                        }
+                                                    },
+                                                    "property_image": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "category": {
+                                                                    "type": "string",
+                                                                    "example": "living"
+                                                                },
+                                                                "image": {
+                                                                    "type": "string",
+                                                                    "example": "https://dreamsakha.rusofterp.in/public/webimage/property/images/173995567367b59dd9251832.jpeg"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No data found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No data found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "An error occurred while fetching the data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "An error occurred"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Internal server error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/getPremiumProjects": {
+            "get": {
+                "tags": [
+                    "Website HomePage"
+                ],
+                "summary": "Get premium property projects",
+                "description": "Fetches the top 5 premium property projects",
+                "operationId": "72d9ec16f1e8fc0387d5c63cdfaadae4",
+                "responses": {
+                    "200": {
+                        "description": "Premium projects fetched successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data fetched successfully"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "project_id": {
+                                                        "type": "integer",
+                                                        "example": 2
+                                                    },
+                                                    "project_name": {
+                                                        "type": "string",
+                                                        "example": "Gera Group"
+                                                    },
+                                                    "locality_name": {
+                                                        "type": "string",
+                                                        "example": "Churu"
+                                                    },
+                                                    "sub_locality_name": {
+                                                        "type": "string",
+                                                        "example": "Murlipura"
+                                                    },
+                                                    "amenities_names": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string",
+                                                            "example": "CCTV Surveillance"
+                                                        }
+                                                    },
+                                                    "bhk_values": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string",
+                                                            "example": "2"
+                                                        }
+                                                    },
+                                                    "buildup_area": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string",
+                                                            "example": "777777"
+                                                        }
+                                                    },
+                                                    "pricing": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string",
+                                                            "example": "1200000.00"
+                                                        }
+                                                    },
+                                                    "property_image": {
+                                                        "type": "string",
+                                                        "example": "1737203748678ba02424d246.jpg"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No data found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No data found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to fetch premium projects",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "An error occurred"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "An error occurred"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/getAffordableProjects": {
+            "get": {
+                "tags": [
+                    "Website HomePage"
+                ],
+                "summary": "Get affordable property projects",
+                "description": "Fetches the top 5 affordable property projects based on specific criteria.",
+                "operationId": "0b822a279c4cdd169f44fd6f347c9bf1",
+                "responses": {
+                    "200": {
+                        "description": "Affordable projects fetched successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data fetched successfully"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "project_id": {
+                                                        "type": "integer",
+                                                        "example": 2
+                                                    },
+                                                    "project_name": {
+                                                        "type": "string",
+                                                        "example": "Gera Group"
+                                                    },
+                                                    "locality_name": {
+                                                        "type": "string",
+                                                        "example": "Churu"
+                                                    },
+                                                    "sub_locality_name": {
+                                                        "type": "string",
+                                                        "example": "Murlipura"
+                                                    },
+                                                    "amenities_names": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string",
+                                                            "example": "CCTV Surveillance"
+                                                        }
+                                                    },
+                                                    "bhk_values": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string",
+                                                            "example": "2"
+                                                        }
+                                                    },
+                                                    "buildup_area": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string",
+                                                            "example": "777777"
+                                                        }
+                                                    },
+                                                    "pricing": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string",
+                                                            "example": "1200000.00"
+                                                        }
+                                                    },
+                                                    "property_image": {
+                                                        "type": "string",
+                                                        "example": "1737203748678ba02424d246.jpg"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No data found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No data found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to fetch affordable projects",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "An error occurred"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "An error occurred"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/getRentAffordableProjects": {
+            "get": {
+                "tags": [
+                    "Website HomePage"
+                ],
+                "summary": "Get affordable rental projects",
+                "description": "Fetches affordable rental projects with related details like locality, amenities, BHK values, build-up area, pricing, and property images.",
+                "operationId": "d61a9633d8ff5a1f51fff710a9ef84c2",
+                "responses": {
+                    "200": {
+                        "description": "Rental apartment data fetched successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Rental apartment data fetched successfully"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "project_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "project_name": {
+                                                        "type": "string",
+                                                        "example": "Kedia Group"
+                                                    },
+                                                    "locality_name": {
+                                                        "type": "string",
+                                                        "example": "Jaipur"
+                                                    },
+                                                    "sub_locality_name": {
+                                                        "type": "string",
+                                                        "example": "Vaishali Nagar"
+                                                    },
+                                                    "amenities_names": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string",
+                                                            "example": "Gym"
+                                                        }
+                                                    },
+                                                    "bhk_values": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string",
+                                                            "example": "1"
+                                                        }
+                                                    },
+                                                    "buildup_area": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string",
+                                                            "example": "750"
+                                                        }
+                                                    },
+                                                    "pricing": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string",
+                                                            "example": "15000"
+                                                        }
+                                                    },
+                                                    "property_image": {
+                                                        "type": "string",
+                                                        "example": "image_url_here"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "204": {
+                        "description": "No rental apartment data found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No rental project data found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "An error occurred",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Error details"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "An error occurred"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/getBhkTypes": {
+            "get": {
+                "tags": [
+                    "Website HomePage"
+                ],
+                "summary": "Get property counts by BHK types",
+                "description": "Fetches the count of properties grouped by BHK types, including 1 RK, 1 BHK to 5 BHK, and 5+ BHK.",
+                "operationId": "21cf61bdd7498950c39570c4c4ece84c",
+                "responses": {
+                    "200": {
+                        "description": "Property counts by BHK types fetched successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data fetched successfully"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "bhk_type": {
+                                                        "type": "string",
+                                                        "example": "1 BHK"
+                                                    },
+                                                    "property_count": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No data found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No data found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "An error occurred",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Error details"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "An error occurred"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Login to the application",
+                "description": "Login using username and password and receive a token.",
+                "operationId": "loginUser",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "username",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "type": "string",
+                                        "example": "9166697302"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "p12345678"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Login successful"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "access_token": {
+                                                    "type": "string",
+                                                    "example": "269|yoqf1jKhyi4ypyehD7Vgtb3kBsQv23Lvxj7dXztO9ceb92fb"
+                                                },
+                                                "token_type": {
+                                                    "type": "string",
+                                                    "example": "Bearer"
+                                                },
+                                                "user_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "roles": {
+                                                    "type": "string",
+                                                    "example": "User"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid login credentials",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid login credentials"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Account is inactive or suspended",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Account is inactive or suspended"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation failed"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Login failed"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/loginWithOtp": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Login with OTP",
+                "description": "Authenticates the user by generating and sending an OTP to their registered whatsapp mobile number.",
+                "operationId": "loginWithOtp",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "username"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "description": "The mobile number of the user.",
+                                        "type": "string",
+                                        "example": "9166697302"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OTP sent successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Otp sent to registered mobile no."
+                                        },
+                                        "mobile": {
+                                            "description": "The mobile number of the user.",
+                                            "type": "string",
+                                            "example": "9166697302"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation failed"
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "additionalProperties": {
+                                                "property": null,
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Account inactive or suspended",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Account is inactive or suspended"
+                                        },
+                                        "data": {
+                                            "type": "null"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Login failed"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "An unexpected error occurred."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/matchOtp": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Match OTP and authenticate user",
+                "description": "Validates the OTP and authenticates the user by returning an access token.",
+                "operationId": "c813b768475a3730b004aff179c20751",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "otp",
+                                    "username"
+                                ],
+                                "properties": {
+                                    "otp": {
+                                        "description": "The OTP sent to the user",
+                                        "type": "string",
+                                        "example": "1234"
+                                    },
+                                    "username": {
+                                        "description": "The username or mobile number",
+                                        "type": "string",
+                                        "example": "9660045163"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "Status of the response",
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "description": "Response message",
+                                            "type": "string",
+                                            "example": "Login successful."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "access_token": {
+                                                    "description": "Access token for the user",
+                                                    "type": "string",
+                                                    "example": "269|yoqf1jKhyi4ypyehD7Vgtb3kBsQv23Lvxj7dXztO9ceb92fb"
+                                                },
+                                                "token_type": {
+                                                    "description": "Type of the token",
+                                                    "type": "string",
+                                                    "example": "Bearer"
+                                                },
+                                                "data": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "description": "User ID",
+                                                            "type": "integer",
+                                                            "example": 9
+                                                        },
+                                                        "name": {
+                                                            "description": "User name",
+                                                            "type": "string",
+                                                            "example": "Himanshu Saini"
+                                                        },
+                                                        "mobile": {
+                                                            "description": "User mobile number",
+                                                            "type": "string",
+                                                            "example": "9660045163"
+                                                        },
+                                                        "email": {
+                                                            "description": "User email address",
+                                                            "type": "string",
+                                                            "example": "janedoe@example.com"
+                                                        },
+                                                        "dob": {
+                                                            "description": "Date of birth",
+                                                            "type": "string",
+                                                            "example": null,
+                                                            "nullable": true
+                                                        },
+                                                        "gender": {
+                                                            "description": "Gender",
+                                                            "type": "string",
+                                                            "example": null,
+                                                            "nullable": true
+                                                        },
+                                                        "address": {
+                                                            "description": "User address",
+                                                            "type": "string",
+                                                            "example": "sikar"
+                                                        },
+                                                        "image": {
+                                                            "description": "User profile image URL",
+                                                            "type": "string",
+                                                            "example": null,
+                                                            "nullable": true
+                                                        },
+                                                        "role_name": {
+                                                            "description": "Role name",
+                                                            "type": "string",
+                                                            "example": "User"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Invalid OTP or OTP expired",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "Status of the response",
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "description": "Error message",
+                                            "type": "string",
+                                            "example": "Invalid OTP or OTP expired"
+                                        },
+                                        "data": {
+                                            "description": "No data returned",
+                                            "type": "null",
+                                            "example": null
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "Status of the response",
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "description": "Error message",
+                                            "type": "string",
+                                            "example": "Validation failed"
+                                        },
+                                        "errors": {
+                                            "description": "Validation errors",
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "Status of the response",
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "description": "Error message",
+                                            "type": "string",
+                                            "example": "Login failed"
+                                        },
+                                        "error": {
+                                            "description": "Detailed error message",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/userLoggedIn": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Get logged-in user data",
+                "description": "Fetches the details of the currently authenticated user. If the user's status is not '1', access is denied.",
+                "operationId": "1da9aa192eae87780acc773b45b0deeb",
+                "responses": {
+                    "200": {
+                        "description": "Logged-in user data retrieved successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "Indicates if the request was successful",
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "description": "Response message",
+                                            "type": "string",
+                                            "example": "Logged User Data"
+                                        },
+                                        "user": {
+                                            "description": "User details",
+                                            "properties": {
+                                                "id": {
+                                                    "description": "User ID",
+                                                    "type": "integer",
+                                                    "example": 9
+                                                },
+                                                "status": {
+                                                    "description": "User status",
+                                                    "type": "string",
+                                                    "example": "1"
+                                                },
+                                                "name": {
+                                                    "description": "User name",
+                                                    "type": "string",
+                                                    "example": "Himanshu Saini"
+                                                },
+                                                "mobile": {
+                                                    "description": "User mobile number",
+                                                    "type": "string",
+                                                    "example": "9660045163"
+                                                },
+                                                "email": {
+                                                    "description": "User email address",
+                                                    "type": "string",
+                                                    "example": "janedoe@example.com"
+                                                },
+                                                "dob": {
+                                                    "description": "Date of birth",
+                                                    "type": "string",
+                                                    "example": "1990-01-01",
+                                                    "nullable": true
+                                                },
+                                                "gender": {
+                                                    "description": "Gender",
+                                                    "type": "string",
+                                                    "example": "Male",
+                                                    "nullable": true
+                                                },
+                                                "address": {
+                                                    "description": "User address",
+                                                    "type": "string",
+                                                    "example": "Sikar"
+                                                },
+                                                "image": {
+                                                    "description": "User profile image URL",
+                                                    "type": "string",
+                                                    "example": "http://example.com/images/profile.jpg",
+                                                    "nullable": true
+                                                },
+                                                "pincode": {
+                                                    "description": "User pincode",
+                                                    "type": "string",
+                                                    "example": "332001"
+                                                },
+                                                "role_name": {
+                                                    "description": "Role name",
+                                                    "type": "string",
+                                                    "example": "User"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "show_path": {
+                                            "description": "Path for showing images",
+                                            "type": "string",
+                                            "example": "http://example.com/images/"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Access denied. User account is inactive or suspended.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "Indicates if the request failed",
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "description": "Error message",
+                                            "type": "string",
+                                            "example": "Account is inactive or suspended"
+                                        },
+                                        "data": {
+                                            "description": "No data returned",
+                                            "type": "null",
+                                            "example": null
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. User is not authenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "Indicates if the request failed",
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "description": "Error message",
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Website HomePage",
+            "description": "Website HomePage"
+        },
+        {
+            "name": "Authentication",
+            "description": "Authentication"
+        }
+    ],
+    "components": {
+        "securitySchemes": {
+            "Bearer": {
+                "type": "apiKey",
+                "name": "Authorization",
+                "in": "header",
+                "description": "Bearer Token for authorization"
+            }
+        }
+    },
+    "security": [
+        {
+            "Bearer": []
+        }
+    ]
+}
