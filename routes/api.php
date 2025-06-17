@@ -38,6 +38,7 @@ Route::post('saveExcelData', [ApiController::class, 'saveExcelData']);
 Route::post('/getUsersData', [ApiController::class, 'getUsersData']);
 Route::post('/getColumns', [ApiController::class, 'getColumns']);
 Route::get('/menu/{userId}', [ApiController::class, 'getSidebarByUser']);
+Route::post('/menus/permissions', [ApiController::class, 'menusForSetPermission']);
 Route::get('/getRoles/{adminId}/{branchId}', [ApiController::class, 'getRoles']);
 Route::get('/states', [ApiController::class, 'getStates']);
 Route::post('createRole', [ApiController::class, 'createRole'])->middleware('auth:sanctum');

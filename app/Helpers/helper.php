@@ -31,7 +31,156 @@ use Illuminate\Support\Facades\Mail;
 class helper{
 
 
+public static function allSidebarMenus()
+{
+$sidebarMenu = [
+    [
+        'title' => 'Dashboard',
+        'className' => 'dashboard.view',
+        'status' => true,
+        'icon' => 'dashboard', // Google Material Symbol
+        'route' => 'dashboard',
+    ],
+    [
+        'title' => 'Branch',
+        'className' => 'branch.view',
+        'status' => true,
+        'icon' => 'network-wired', // Google Material Symbol
+        'route' => 'branch',
+    ],
+    [
+        'title' => 'Role',
+        'className' => 'role.view',
+        'status' => true,
+        'icon' => 'person', // Google Material Symbol
+        'route' => 'role',
+    ],
+    [
+        'title' => 'User Management',
+        'className' => 'user_management',
+        'status' => true,
+        'icon' => 'users', // Material Symbol
+        'subItems' => [
+            [
+                'title' => 'Add User',
+                'className' => 'user_management.add',
+                'status' => true,
+                'route' => 'userAdd',
+                'icon' => 'person_add', // Material Symbol
+            ],
+            [
+                'title' => 'View User',
+                'className' => 'user_management.view',
+                'status' => true,
+                'route' => 'userView',
+                'icon' => 'visibility', // Material Symbol
+            ],
+            [
+                'title' => 'Id & Password',
+                'className' => 'user_management.credentials',
+                'status' => true,
+                'route' => 'userCredentials',
+                'icon' => 'key', // Material Symbol
+            ],
+        ],
+    ],
+    [
+        'title' => 'Student Management',
+        'className' => 'student_management',
+        'status' => true,
+        'icon' => 'school', // Material Symbol
+        'subItems' => [
+            [
+                'title' => 'Add Student',
+                'className' => 'student_management.add',
+                'status' => true,
+                'route' => 'studentAdd',
+                'icon' => 'person_add', // Material Symbol
+            ],
+            [
+                'title' => 'View Student',
+                'className' => 'student_management.view',
+                'status' => true,
+                'route' => 'studentView',
+                'icon' => 'visibility', // Material Symbol
+            ],
+            [
+                'title' => 'Id & Password',
+                'className' => 'student_management.credentials',
+                'status' => true,
+                'route' => 'studentCredentials',
+                'icon' => 'key', // Material Symbol
+            ],
+        ],
+    ],
+     [
+        'title' => 'Expense',
+        'className' => 'Expense.view',
+        'status' => true,
+        'icon' => 'money-bill-wave', // Google Material Symbol
+        'route' => 'expense',
+    ],
+  
+];
 
+
+return $sidebarMenu;
+}
+public static function getPermissions($user)
+{
+    if (!$user) {
+        return [];
+    }
+
+    $userId = $user->id;
+    $roleId = $user->role_id;
+
+    // Step 1: Try user_permissions
+    $userPermissions = DB::table('user_permissions')
+        ->where('user_id', $userId)
+        ->pluck('permission')
+        ->toArray();
+
+    if (!empty($userPermissions)) {
+        return $userPermissions;
+    }
+
+    // Step 2: Fallback to role_permissions
+    $rolePermissions = DB::table('role_permissions')
+        ->where('role_id', $roleId)
+        ->pluck('permission')
+        ->toArray();
+
+    return !empty($rolePermissions) ? $rolePermissions : [];
+}
+
+public static function getSidebar($user)
+{
+    $allPermissions = self::getPermissions($user);
+    $allowedPermissions = array_map('strtolower', $allPermissions);
+
+  $sidebarMenu = self::allSidebarMenus();
+    // Filter for non-admin roles
+    if ($user->role_id != 1) {
+        foreach ($sidebarMenu as $key => &$menu) {
+            if (isset($menu['subItems'])) {
+                $menu['subItems'] = array_filter($menu['subItems'], function ($sub) use ($allowedPermissions) {
+                    return in_array(strtolower($sub['className']), $allowedPermissions);
+                });
+
+                if (empty($menu['subItems'])) {
+                    unset($sidebarMenu[$key]);
+                }
+            } else {
+                if (!in_array(strtolower($menu['className']), $allowedPermissions)) {
+                    unset($sidebarMenu[$key]);
+                }
+            }
+        }
+    }
+
+    return array_values($sidebarMenu);
+}
 
    public function send($medium, $to, $message)
     {

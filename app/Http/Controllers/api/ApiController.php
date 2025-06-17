@@ -11,6 +11,8 @@ use App\Models\InputField;
 // use App\Models\FormField;
 // use App\Models\AllowedFormField;
 use App\Models\RoleInputAssignment;
+use App\Models\RolePermission;
+use App\Models\UserPermission;
 use App\Models\NewRegistrationIp;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -332,18 +334,33 @@ public function createUser(Request $request)
 {
     $data = $request->all();
 
+    // ✅ Extract and unset permissions
+ $permissions = isset($data['permissions']) ? json_decode($data['permissions'], true) : [];
+
+    unset($data['permissions']);
+
     // 🔐 Handle password encryption
     $this->handlePasswordField($data);
 
     // 📂 Handle uploaded files dynamically
     foreach ($request->allFiles() as $key => $file) {
         if ($file->isValid()) {
-            $data[$key] = $this->handleFileUpload($file, 'users'); // 'users' is folder name
+            $data[$key] = $this->handleFileUpload($file, 'users');
         }
     }
 
-    // 👤 Create user with processed data
+    // 👤 Create user
     $user = User::create($data);
+
+    // 🔁 Save permissions if present
+    if (!empty($permissions) && is_array($permissions)) {
+        foreach ($permissions as $permission) {
+            \App\Models\UserPermission::create([
+                'user_id' => $user->id,
+                'permission' => $permission,
+            ]);
+        }
+    }
 
     return response()->json([
         'status' => true,
@@ -351,6 +368,7 @@ public function createUser(Request $request)
         'data' => $user
     ], 201);
 }
+
 
     // Update an existing branch
 public function updateUser(Request $request, $id)
@@ -396,17 +414,34 @@ public function updateUser(Request $request, $id)
         ], 200);
     }
 public function createRole(Request $request)
-    {
-      
+{
+    $data = $request->all();
 
-        $role = Role::create($request->all());
+    // ✅ Extract and decode permissions (JSON string)
+    $permissions = isset($data['permissions']) ? json_decode($data['permissions'], true) : [];
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Role created successfully',
-            'data' => $role
-        ], 201);
+    // Remove permissions from role data before saving
+    unset($data['permissions']);
+
+    // ✅ Create role using only role-specific data
+    $role = Role::create($data);
+
+    // ✅ Insert role permissions separately
+    if (!empty($permissions) && is_array($permissions)) {
+        foreach ($permissions as $permission) {
+            RolePermission::create([
+                'role_id'   => $role->id,
+                'permission' => $permission,
+            ]);
+        }
     }
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Role created successfully',
+        'data' => $role
+    ], 201);
+}
 
     // Update an existing branch
     public function updateRole(Request $request, $id)
@@ -736,66 +771,122 @@ $user = auth()->user();
         return response()->json($states);
     }
 
-    public function getSidebarByUser($userId)
-    {
-        try {
-            // Check if user exists
-            $user = User::find($userId);
-            if (!$user) {
-                return response()->json(['error' => 'User not found.'], 404);
-            }
+    // public function getSidebarByUser($userId)
+    // {
+    //     try {
+    //         // Check if user exists
+    //         $user = User::find($userId);
+    //         if (!$user) {
+    //             return response()->json(['error' => 'User not found.'], 404);
+    //         }
     
-            // If user has role_id = 1, fetch all menus
-            if ($user->role_id == 1) {
-                $menus = Menu::whereNull('parent_id') // Fetch only main menus
-                    ->with('submenus') // Load all submenus
-                    ->get();
-            } else {
-                // Fetch menus assigned to the user
-                $menus = Menu::whereHas('userPermissions', function ($query) use ($userId) {
-                        $query->where('user_id', $userId);
-                    })
-                    ->whereNull('parent_id') // Fetch only main menus
-                    ->with(['submenus' => function ($query) use ($userId) {
-                        // Fetch only submenus where the user has permission
-                        $query->whereHas('userPermissions', function ($subQuery) use ($userId) {
-                            $subQuery->where('user_id', $userId);
-                        });
-                    }])
-                    ->get();
-            }
+    //         // If user has role_id = 1, fetch all menus
+    //         if ($user->role_id == 1) {
+    //             $menus = Menu::whereNull('parent_id') // Fetch only main menus
+    //                 ->with('submenus') // Load all submenus
+    //                 ->get();
+    //         } else {
+    //             // Fetch menus assigned to the user
+    //             $menus = Menu::whereHas('userPermissions', function ($query) use ($userId) {
+    //                     $query->where('user_id', $userId);
+    //                 })
+    //                 ->whereNull('parent_id') // Fetch only main menus
+    //                 ->with(['submenus' => function ($query) use ($userId) {
+    //                     // Fetch only submenus where the user has permission
+    //                     $query->whereHas('userPermissions', function ($subQuery) use ($userId) {
+    //                         $subQuery->where('user_id', $userId);
+    //                     });
+    //                 }])
+    //                 ->get();
+    //         }
     
-            if ($menus->isEmpty()) {
-                return response()->json(['error' => 'No menus found for this user.'], 404);
-            }
+    //         if ($menus->isEmpty()) {
+    //             return response()->json(['error' => 'No menus found for this user.'], 404);
+    //         }
     
-            // Format response with route URLs
-            $menuList = $menus->map(function ($menu) {
-                return [
-                    'id' => $menu->id,
-                    'name' => $menu->name,
-                    'icon' => $menu->icon ?? 'bi-folder', // Default icon
-                    'route' => $menu->route ?: '#', // Use 'route' field
-                    'role_id' => $menu->role_id ?? '',
-                    'submenus' => $menu->submenus->map(function ($submenu) {
-                        return [
-                            'id' => $submenu->id,
-                            'name' => $submenu->name,
-                            'icon' => $submenu->icon ?? 'bi-dot', // Default submenu icon
-                            'route' => $submenu->route ?: '#', // Use 'route' field for submenu
-                            'role_id' => $submenu->role_id ?? '',
-                        ];
-                    }),
-                ];
-            });
+    //         // Format response with route URLs
+    //         $menuList = $menus->map(function ($menu) {
+    //             return [
+    //                 'id' => $menu->id,
+    //                 'name' => $menu->name,
+    //                 'icon' => $menu->icon ?? 'bi-folder', // Default icon
+    //                 'route' => $menu->route ?: '#', // Use 'route' field
+    //                 'role_id' => $menu->role_id ?? '',
+    //                 'submenus' => $menu->submenus->map(function ($submenu) {
+    //                     return [
+    //                         'id' => $submenu->id,
+    //                         'name' => $submenu->name,
+    //                         'icon' => $submenu->icon ?? 'bi-dot', // Default submenu icon
+    //                         'route' => $submenu->route ?: '#', // Use 'route' field for submenu
+    //                         'role_id' => $submenu->role_id ?? '',
+    //                     ];
+    //                 }),
+    //             ];
+    //         });
     
-            return response()->json($menuList);
-        } catch (Exception $e) {
-            Log::error('Sidebar Fetch Error: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to fetch sidebar menus.', 'message' => $e->getMessage()], 500);
+    //         return response()->json($menuList);
+    //     } catch (Exception $e) {
+    //         Log::error('Sidebar Fetch Error: ' . $e->getMessage());
+    //         return response()->json(['error' => 'Failed to fetch sidebar menus.', 'message' => $e->getMessage()], 500);
+    //     }
+    // }
+
+
+  public function menusForSetPermission(Request $request)
+{
+    $roleId = $request->role_id ?? '';
+    $userId = $request->user_id ?? '';
+
+    $permissions = collect(); // default empty collection
+
+    if (!empty($userId)) {
+        // Try fetching user-specific permissions
+        $permissions = UserPermission::where('user_id', $userId)->pluck('permission');
+
+        // If user-specific permissions are empty, fallback to role-based
+        if ($permissions->isEmpty() && !empty($roleId)) {
+            $permissions = RolePermission::where('role_id', $roleId)->pluck('permission');
         }
+    } elseif (!empty($roleId)) {
+        // No user ID, fallback to role-based permissions
+        $permissions = RolePermission::where('role_id', $roleId)->pluck('permission');
     }
 
+    // Fetch all sidebar menus
+    $getAllMenus = Helper::allSidebarMenus();
+
+    if (!$getAllMenus) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Menu not found',
+        ], 404);
+    }
+
+    return response()->json([
+        'status' => true,
+        'data' => $getAllMenus,
+        'permissions' => $permissions,
+    ]);
+}
+
+    public function getSidebarByUser($userId)
+{
+    $user = User::find($userId);
+
+    if (!$user) {
+        return response()->json([
+            'status' => false,
+            'message' => 'User not found',
+        ], 404);
+    }
+
+    $sidebar = Helper::getSidebar($user);
+
+    return response()->json([
+        'status' => true,
+        'data' => $sidebar
+    ]);
+}
 
     // public function getFormFields()
     // {
