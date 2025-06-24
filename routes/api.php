@@ -36,6 +36,7 @@ Route::post('OAUTH2', [AuthController::class, 'OAUTH2']);
 Route::post('checkIp', [ApiController::class, 'checkIp']);
 Route::post('saveExcelData', [ApiController::class, 'saveExcelData']);
 Route::post('/getUsersData', [ApiController::class, 'getUsersData']);
+Route::post('/getStudentsData', [ApiController::class, 'getStudentsData']);
 Route::post('/getColumns', [ApiController::class, 'getColumns']);
 Route::get('/menu/{userId}', [ApiController::class, 'getSidebarByUser']);
 Route::post('/menus/permissions', [ApiController::class, 'menusForSetPermission']);
@@ -88,6 +89,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('user/{id}', [ApiController::class, 'updateUser']);
     Route::post('getUsers', [ApiController::class, 'getUsers']);
 
- 
+  Route::post('student', [ApiController::class, 'createStudent']);
+  Route::post('getStudents', [ApiController::class, 'getStudents']);
+  Route::put('student/{id}', [ApiController::class, 'updateStudent']);
     
 });

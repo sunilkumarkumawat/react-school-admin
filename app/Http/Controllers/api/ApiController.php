@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api;
 
 
 use App\Models\User;
+use App\Models\Student;
 use App\Models\Menu;
 use App\Models\Role;
 use App\Models\Branch;
@@ -28,60 +29,60 @@ use Illuminate\Support\Facades\Storage;
 class ApiController extends Controller
 {
 
-public function fillUsersToTwentyThousand()
-{
-    $target = 20000;
-    $currentCount = \App\Models\User::count();
+    public function fillUsersToTwentyThousand()
+    {
+        $target = 20000;
+        $currentCount = \App\Models\User::count();
 
-    if ($currentCount >= $target) {
+        if ($currentCount >= $target) {
+            return response()->json([
+                'status' => true,
+                'message' => "Already have $currentCount users."
+            ]);
+        }
+
+        // Get users to duplicate (excluding role_id = 1)
+        $users = \App\Models\User::where('role_id', '!=', 1)->get();
+
+        if ($users->isEmpty()) {
+            return response()->json([
+                'status' => false,
+                'message' => "No users to duplicate (excluding role_id = 1)."
+            ]);
+        }
+
+        $toCreate = $target - $currentCount;
+        $created = 0;
+
+        while ($created < $toCreate) {
+            foreach ($users as $user) {
+                if ($created >= $toCreate) break;
+
+                $newUser = $user->replicate();
+
+                // Make username/email unique if they exist
+                if (isset($newUser->username)) {
+                    $newUser->username = $newUser->username . '_copy_' . uniqid();
+                }
+                if (isset($newUser->email)) {
+                    $parts = explode('@', $newUser->email);
+                    $newUser->email = $parts[0] . '+copy' . uniqid() . '@' . ($parts[1] ?? 'example.com');
+                }
+
+                // Optionally reset password
+                // $newUser->password = bcrypt('defaultpassword');
+
+                $newUser->save();
+                $created++;
+            }
+        }
+
         return response()->json([
             'status' => true,
-            'message' => "Already have $currentCount users."
+            'message' => "Filled users table to $target entries by duplicating users (excluding role_id = 1)."
         ]);
     }
-
-    // Get users to duplicate (excluding role_id = 1)
-    $users = \App\Models\User::where('role_id', '!=', 1)->get();
-
-    if ($users->isEmpty()) {
-        return response()->json([
-            'status' => false,
-            'message' => "No users to duplicate (excluding role_id = 1)."
-        ]);
-    }
-
-    $toCreate = $target - $currentCount;
-    $created = 0;
-
-    while ($created < $toCreate) {
-        foreach ($users as $user) {
-            if ($created >= $toCreate) break;
-
-            $newUser = $user->replicate();
-
-            // Make username/email unique if they exist
-            if (isset($newUser->username)) {
-                $newUser->username = $newUser->username . '_copy_' . uniqid();
-            }
-            if (isset($newUser->email)) {
-                $parts = explode('@', $newUser->email);
-                $newUser->email = $parts[0] . '+copy' . uniqid() . '@' . ($parts[1] ?? 'example.com');
-            }
-
-            // Optionally reset password
-            // $newUser->password = bcrypt('defaultpassword');
-
-            $newUser->save();
-            $created++;
-        }
-    }
-
-    return response()->json([
-        'status' => true,
-        'message' => "Filled users table to $target entries by duplicating users (excluding role_id = 1)."
-    ]);
-}
-        private function handlePasswordField(&$data)
+    private function handlePasswordField(&$data)
     {
         if (isset($data['password'])) {
             $data['password'] = bcrypt($data['password']);
@@ -93,7 +94,7 @@ public function fillUsersToTwentyThousand()
         $filename = time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
         $path = $file->storeAs('public/' . $folder, $filename);
 
-      
+
         return str_replace('public/', 'storage/app/public/', $path);
     }
     private function normalizeDate($dob)
@@ -103,7 +104,7 @@ public function fillUsersToTwentyThousand()
             if (is_numeric($dob)) {
                 return Carbon::createFromTimestamp(($dob - 25569) * 86400)->format('Y-m-d');
             }
-    
+
             // Handle string formats like dd-mm-yyyy or dd/mm/yyyy
             $formatted = str_replace(['/', '.'], '-', $dob);
             return Carbon::parse($formatted)->format('Y-m-d');
@@ -111,24 +112,24 @@ public function fillUsersToTwentyThousand()
             return null;
         }
     }
-//     public function baseImagePath()
-//     {
-//         // $baseImagePath = config('app.url') . '/dreamsakha-admin/webimage/';
-//         $baseImagePath = config('app.url') . '/public/webimage/';
-// return $baseImagePath;
-//     }
+    //     public function baseImagePath()
+    //     {
+    //         // $baseImagePath = config('app.url') . '/dreamsakha-admin/webimage/';
+    //         $baseImagePath = config('app.url') . '/public/webimage/';
+    // return $baseImagePath;
+    //     }
 
-public function baseImagePath()
-{
-    // This should match the public URL path to the storage folder
-    // return config('app.url') . '/';
-    return config('app.url') . '/react-laravel-school/';
-}
+    public function baseImagePath()
+    {
+        // This should match the public URL path to the storage folder
+        // return config('app.url') . '/';
+        return config('app.url') . '/react-laravel-school/';
+    }
     public function checkIp(Request $request)
     {
-        $ip = $request->ip; 
-        $isAllowed = NewRegistrationIp::where('ip', $ip)->where('status',1)->exists();
-    
+        $ip = $request->ip;
+        $isAllowed = NewRegistrationIp::where('ip', $ip)->where('status', 1)->exists();
+
         if ($isAllowed) {
             return response()->json(['status' => true], 200);
         } else {
@@ -141,26 +142,26 @@ public function baseImagePath()
     {
         try {
             $selectedIds = json_decode($request->selected_ids, true);
-    
+
             if (!is_array($selectedIds)) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Invalid selected_ids format. Must be a JSON array.'
                 ], 422);
             }
-    
+
             $roleId = $request->role_id;
             $adminId = $request->admin_id;
             $branchId = $request->branch_id;
-    
+
             // Step 1: Get existing assigned input_ids
             $existingAssignments = RoleInputAssignment::where('role_id', $roleId)
                 ->where('admin_id', $adminId)
                 ->where('branch_id', $branchId)
                 ->get();
-    
+
             $existingIds = $existingAssignments->pluck('input_id')->toArray();
-    
+
             // Step 2: Determine which to delete
             $toDelete = array_diff($existingIds, $selectedIds);
             if (!empty($toDelete)) {
@@ -170,7 +171,7 @@ public function baseImagePath()
                     ->whereIn('input_id', $toDelete)
                     ->delete();
             }
-    
+
             // Step 3: Determine which to insert
             $toInsert = array_diff($selectedIds, $existingIds);
             foreach ($toInsert as $inputId) {
@@ -181,14 +182,13 @@ public function baseImagePath()
                     'input_id' => $inputId,
                 ]);
             }
-    
+
             return response()->json([
                 'status' => true,
                 'message' => 'Inputs synced successfully.',
                 'added_count' => count($toInsert),
                 'removed_count' => count($toDelete)
             ], 201);
-    
         } catch (Exception $e) {
             return response()->json([
                 'status' => false,
@@ -200,127 +200,137 @@ public function baseImagePath()
 
 
     public function getRoleInputAssignments(Request $request)
-{
-    try {
-        $roleId = $request->role_id;
-        $adminId = $request->admin_id;
-        $branchId = $request->branch_id;
+    {
+        try {
+            $roleId = $request->role_id;
+            $adminId = $request->admin_id;
+            $branchId = $request->branch_id;
 
-        if (!$roleId || !$adminId || !$branchId) {
+            if (!$roleId || !$adminId || !$branchId) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'role_id, admin_id, and branch_id are required.'
+                ], 422);
+            }
+
+            $assignedInputs = RoleInputAssignment::where('role_input_assignments.role_id', $roleId)
+                ->where('role_input_assignments.admin_id', $adminId)
+                // ->where('role_input_assignments.branch_id', $branchId)
+                ->leftJoin('inputs', 'role_input_assignments.input_id', '=', 'inputs.id')
+                ->select(
+                    'inputs.label',
+                    'inputs.type',
+                    'inputs.name',
+                    'inputs.required',
+                    'inputs.col',
+                    'inputs.placeholder',
+                    'inputs.options',
+                    'inputs.source_table',
+                    'inputs.source_column',
+                    'inputs.value',
+                    'inputs.step',
+                )
+                ->get();
+            return response()->json([
+                'status' => true,
+                'data' => $assignedInputs,
+                'message' => 'Assigned inputs fetched successfully.'
+            ], 200);
+        } catch (Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'role_id, admin_id, and branch_id are required.'
-            ], 422);
+                'message' => 'Failed to fetch assigned inputs.',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $assignedInputs = RoleInputAssignment::where('role_input_assignments.role_id', $roleId)
-        ->where('role_input_assignments.admin_id', $adminId)
-        // ->where('role_input_assignments.branch_id', $branchId)
-        ->leftJoin('inputs', 'role_input_assignments.input_id', '=', 'inputs.id')
-        ->select(
-            'inputs.label',
-            'inputs.type',    
-            'inputs.name',     
-            'inputs.required',     
-            'inputs.col',     
-            'inputs.placeholder',     
-            'inputs.options',     
-            'inputs.source_table',     
-            'inputs.source_column',     
-            'inputs.value',     
-            'inputs.step',     
-        )
-        ->get();
-        return response()->json([
-            'status' => true,
-            'data' => $assignedInputs,
-            'message' => 'Assigned inputs fetched successfully.'
-        ], 200);
-    } catch (Exception $e) {
-        return response()->json([
-            'status' => false,
-            'message' => 'Failed to fetch assigned inputs.',
-            'error' => $e->getMessage()
-        ], 500);
     }
-}
     public function saveExcelData(Request $request)
     {
         $data = $request->all();
 
-            if($data)
-            {
-                $data  = $data['data'][0];
-            }
+        if ($data) {
+            $data  = $data['data'][0];
+        }
 
-            // Normalize DOB format
-    if (!empty($data['dob'])) {
-        $data['dob'] = $this->normalizeDate($data['dob']);
-    }
-    
-         // Hash password before saving
-         $data['confirm_password'] = $data['password'];
-         $data['password'] = bcrypt($data['password']);
-         $data['role_id'] = 1;
-        
+        // Normalize DOB format
+        if (!empty($data['dob'])) {
+            $data['dob'] = $this->normalizeDate($data['dob']);
+        }
 
-           // Create user
+        // Hash password before saving
+        $data['confirm_password'] = $data['password'];
+        $data['password'] = bcrypt($data['password']);
+        $data['role_id'] = 1;
+
+
+        // Create user
         $user = User::create($data);
 
-      // Update admin_id after creating (assuming you want to set their own ID as admin_id)
-      $user->admin_id = $user->id;
-      $user->save();
-      
-      
+        // Update admin_id after creating (assuming you want to set their own ID as admin_id)
+        $user->admin_id = $user->id;
+        $user->save();
 
-      $getArray = [
-        'users.id', 'users.status', 'users.name', 'users.mobile', 'users.username',
-        'users.dob', 'users.gender', 'users.address', 'users.image', 'users.pincode','users.auth_provider','users.role_id',
-        'users.branch_id','users.admin_id',
-    ];
 
-    $user = User:: where('users.id', $user->id)
-        ->leftJoin('roles', 'users.role_id', '=', 'roles.id')
-        ->select(array_merge($getArray, ['roles.name as role_name'])) // Rename role column for clarity
-        ->first();
-            // Create token
-            $token = $user->createToken('auth_token')->plainTextToken;
-    
-            // Return success response
-            return response()->json([
-                'status' => true,
-                'message' => 'User Created successfully',
-                    'access_token' => $token,
-                    'user' => $user, // Return the user data
-            ], 200);
+
+        $getArray = [
+            'users.id',
+            'users.status',
+            'users.name',
+            'users.mobile',
+            'users.username',
+            'users.dob',
+            'users.gender',
+            'users.address',
+            'users.image',
+            'users.pincode',
+            'users.auth_provider',
+            'users.role_id',
+            'users.branch_id',
+            'users.admin_id',
+        ];
+
+        $user = User::where('users.id', $user->id)
+            ->leftJoin('roles', 'users.role_id', '=', 'roles.id')
+            ->select(array_merge($getArray, ['roles.name as role_name'])) // Rename role column for clarity
+            ->first();
+        // Create token
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        // Return success response
+        return response()->json([
+            'status' => true,
+            'message' => 'User Created successfully',
+            'access_token' => $token,
+            'user' => $user, // Return the user data
+        ], 200);
     }
     // public function createUser(Request $request, $roleId)
     // {
     //     $data = $request->all();
     //     // Handle image upload separately
     //     if ($request->hasFile('image')) {
-           
+
     //         $imagePath = $request->file('image')->store('uploads/users', 'public'); 
     //         $data['image'] = $imagePath;
     //     }
-    
+
     //     // // Remove confirm_password from data before saving
     //     // unset($data['confirm_password']);
-    
+
     //     // Hash password before saving
     //     $data['password'] = bcrypt($data['password']);
-    
+
     //     // Create user
     //     $user = User::create($data);
-    
+
     //     return response()->json(['status' => true, 'message' => 'User created successfully'], 201);
     // }
 
 
 
-public function createBranch(Request $request)
+    public function createBranch(Request $request)
     {
-      
+
 
         $branch = Branch::create($request->all());
 
@@ -330,51 +340,76 @@ public function createBranch(Request $request)
             'data' => $branch
         ], 201);
     }
-public function createUser(Request $request)
-{
-    $data = $request->all();
+    public function createUser(Request $request)
+    {
+        $data = $request->all();
 
-    // ✅ Extract and unset permissions
- $permissions = isset($data['permissions']) ? json_decode($data['permissions'], true) : [];
+        // ✅ Extract and unset permissions
+        $permissions = isset($data['permissions']) ? json_decode($data['permissions'], true) : [];
 
-    unset($data['permissions']);
+        unset($data['permissions']);
 
-    // 🔐 Handle password encryption
-    $this->handlePasswordField($data);
+        // 🔐 Handle password encryption
+        $this->handlePasswordField($data);
 
-    // 📂 Handle uploaded files dynamically
-    foreach ($request->allFiles() as $key => $file) {
-        if ($file->isValid()) {
-            $data[$key] = $this->handleFileUpload($file, 'users');
+        // 📂 Handle uploaded files dynamically
+        foreach ($request->allFiles() as $key => $file) {
+            if ($file->isValid()) {
+                $data[$key] = $this->handleFileUpload($file, 'users');
+            }
         }
+
+        // 👤 Create user
+        $user = User::create($data);
+
+        // 🔁 Save permissions if present
+        if (!empty($permissions) && is_array($permissions)) {
+            foreach ($permissions as $permission) {
+                \App\Models\UserPermission::create([
+                    'user_id' => $user->id,
+                    'permission' => $permission,
+                ]);
+            }
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'User created successfully',
+            'data' => $user
+        ], 201);
     }
 
-    // 👤 Create user
-    $user = User::create($data);
+    // Create Student
 
-    // 🔁 Save permissions if present
-    if (!empty($permissions) && is_array($permissions)) {
-        foreach ($permissions as $permission) {
-            \App\Models\UserPermission::create([
-                'user_id' => $user->id,
-                'permission' => $permission,
-            ]);
+    public function createStudent(Request $request)
+    {
+        $data = $request->all();
+
+        // 🔐 Encrypt password if present (optional for students)
+        $this->handlePasswordField($data); // You can remove this if students don't have passwords
+
+        // 📂 Handle uploaded files dynamically (e.g., photo)
+        foreach ($request->allFiles() as $key => $file) {
+            if ($file->isValid()) {
+                $data[$key] = $this->handleFileUpload($file, 'students');
+            }
         }
-    }
 
-    return response()->json([
-        'status' => true,
-        'message' => 'User created successfully',
-        'data' => $user
-    ], 201);
-}
+        // 👤 Create student
+        $student = Student::create($data);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Student created successfully',
+            'data' => $student
+        ], 201);
+    }
 
 
     // Update an existing branch
-public function updateUser(Request $request, $id)
+    public function updateUser(Request $request, $id)
     {
         $user = User::find($id);
-
         if (!$user) {
             return response()->json([
                 'status' => false,
@@ -382,16 +417,14 @@ public function updateUser(Request $request, $id)
             ], 404);
         }
 
-       
-
         $user->update($request->all());
-
         return response()->json([
             'status' => true,
             'message' => 'User updated successfully',
             'data' => $user
         ], 200);
     }
+    
     public function updateBranch(Request $request, $id)
     {
         $branch = Branch::find($id);
@@ -403,7 +436,7 @@ public function updateUser(Request $request, $id)
             ], 404);
         }
 
-       
+
 
         $branch->update($request->all());
 
@@ -413,35 +446,35 @@ public function updateUser(Request $request, $id)
             'data' => $branch
         ], 200);
     }
-public function createRole(Request $request)
-{
-    $data = $request->all();
+    public function createRole(Request $request)
+    {
+        $data = $request->all();
 
-    // ✅ Extract and decode permissions (JSON string)
-    $permissions = isset($data['permissions']) ? json_decode($data['permissions'], true) : [];
+        // ✅ Extract and decode permissions (JSON string)
+        $permissions = isset($data['permissions']) ? json_decode($data['permissions'], true) : [];
 
-    // Remove permissions from role data before saving
-    unset($data['permissions']);
+        // Remove permissions from role data before saving
+        unset($data['permissions']);
 
-    // ✅ Create role using only role-specific data
-    $role = Role::create($data);
+        // ✅ Create role using only role-specific data
+        $role = Role::create($data);
 
-    // ✅ Insert role permissions separately
-    if (!empty($permissions) && is_array($permissions)) {
-        foreach ($permissions as $permission) {
-            RolePermission::create([
-                'role_id'   => $role->id,
-                'permission' => $permission,
-            ]);
+        // ✅ Insert role permissions separately
+        if (!empty($permissions) && is_array($permissions)) {
+            foreach ($permissions as $permission) {
+                RolePermission::create([
+                    'role_id'   => $role->id,
+                    'permission' => $permission,
+                ]);
+            }
         }
-    }
 
-    return response()->json([
-        'status' => true,
-        'message' => 'Role created successfully',
-        'data' => $role
-    ], 201);
-}
+        return response()->json([
+            'status' => true,
+            'message' => 'Role created successfully',
+            'data' => $role
+        ], 201);
+    }
 
     // Update an existing branch
     public function updateRole(Request $request, $id)
@@ -455,7 +488,7 @@ public function createRole(Request $request)
             ], 404);
         }
 
-       
+
 
         $role->update($request->all());
 
@@ -467,102 +500,102 @@ public function createRole(Request $request)
     }
 
 
-public function statusChangeSingle($id, $modal)
-{
-    $modelClass = "App\\Models\\" . $modal;
+    public function statusChangeSingle($id, $modal)
+    {
+        $modelClass = "App\\Models\\" . $modal;
 
-    if (!class_exists($modelClass)) {
-        return response()->json(['status' => false, 'message' => 'Invalid model'], 400);
-    }
-
-    $record = $modelClass::find($id);
-
-    if (!$record) {
-        return response()->json(['status' => false, 'message' => 'Record not found'], 404);
-    }
-
-    // Toggle status: if 1 set to 0, if 0 set to 1
-    $record->status = $record->status == 1 ? 0 : 1;
-    $record->save();
-
-    return response()->json([
-        'status' => true,
-        'message' => $modal . ' status changed successfully',
-        'new_status' => $record->status
-    ]);
-}
-public function deleteCommonSingle($id, $modal)
-{
-    $modelClass = "App\\Models\\" . $modal;
-
-    if (!class_exists($modelClass)) {
-        return response()->json(['status' => false, 'message' => 'Invalid model'], 400);
-    }
-
-    $record = $modelClass::find($id);
-
-    if (!$record) {
-        return response()->json(['status' => false, 'message' => 'Record not found'], 404);
-    }
-
-    $record->delete();
-
-    return response()->json(['status' => true, 'message' => $modal . ' Deleted successfully']);
-}
-
-
-
-public function deleteCommonBulk(Request $request, $modal)
-{
-    $modelClass = "App\\Models\\" . $modal;
-
-    if (!class_exists($modelClass)) {
-        return response()->json(['status' => false, 'message' => 'Invalid model'], 400);
-    }
-
-    $ids = $request->ids; // expects: ['id1', 'id2', ...]
-    if (!is_array($ids) || empty($ids)) {
-        return response()->json(['status' => false, 'message' => 'No IDs provided for deletion'], 400);
-    }
-
-    $deleted = $modelClass::whereIn('id', $ids)->delete();
-
-    return response()->json([
-        'status' => true,
-        'deleted_count' => $deleted,
-        'message' => "$deleted $modal records deleted successfully"
-    ]);
-}
-
-private function applyCommonFilters($query, $filters, $table = 'users')
-{
-    foreach ($filters as $key => $value) {
-        if ($value === null || $value === '') continue;
-
-        switch ($key) {
-            case 'status':
-                $query->where("{$table}.status", $value);
-                break;
-            case 'gender':
-                $query->where("{$table}.gender", $value);
-                break;
-
-            case 'name':
-                $query->where("{$table}.name", 'like', "%$value%");
-                break;
-
-            case 'date_from':
-                if (!empty($filters['date_to'])) {
-                    $query->whereBetween("{$table}.created_at", [$filters['date_from'], $filters['date_to']]);
-                }
-                break;
-
-            // Add more filter cases as needed
+        if (!class_exists($modelClass)) {
+            return response()->json(['status' => false, 'message' => 'Invalid model'], 400);
         }
+
+        $record = $modelClass::find($id);
+
+        if (!$record) {
+            return response()->json(['status' => false, 'message' => 'Record not found'], 404);
+        }
+
+        // Toggle status: if 1 set to 0, if 0 set to 1
+        $record->status = $record->status == 1 ? 0 : 1;
+        $record->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => $modal . ' status changed successfully',
+            'new_status' => $record->status
+        ]);
+    }
+    public function deleteCommonSingle($id, $modal)
+    {
+        $modelClass = "App\\Models\\" . $modal;
+
+        if (!class_exists($modelClass)) {
+            return response()->json(['status' => false, 'message' => 'Invalid model'], 400);
+        }
+
+        $record = $modelClass::find($id);
+
+        if (!$record) {
+            return response()->json(['status' => false, 'message' => 'Record not found'], 404);
+        }
+
+        $record->delete();
+
+        return response()->json(['status' => true, 'message' => $modal . ' Deleted successfully']);
     }
 
-    return $query;
-}
+
+
+    public function deleteCommonBulk(Request $request, $modal)
+    {
+        $modelClass = "App\\Models\\" . $modal;
+
+        if (!class_exists($modelClass)) {
+            return response()->json(['status' => false, 'message' => 'Invalid model'], 400);
+        }
+
+        $ids = $request->ids; // expects: ['id1', 'id2', ...]
+        if (!is_array($ids) || empty($ids)) {
+            return response()->json(['status' => false, 'message' => 'No IDs provided for deletion'], 400);
+        }
+
+        $deleted = $modelClass::whereIn('id', $ids)->delete();
+
+        return response()->json([
+            'status' => true,
+            'deleted_count' => $deleted,
+            'message' => "$deleted $modal records deleted successfully"
+        ]);
+    }
+
+    private function applyCommonFilters($query, $filters, $table = 'users')
+    {
+        foreach ($filters as $key => $value) {
+            if ($value === null || $value === '') continue;
+
+            switch ($key) {
+                case 'status':
+                    $query->where("{$table}.status", $value);
+                    break;
+                case 'gender':
+                    $query->where("{$table}.gender", $value);
+                    break;
+
+                case 'name':
+                    $query->where("{$table}.name", 'like', "%$value%");
+                    break;
+
+                case 'date_from':
+                    if (!empty($filters['date_to'])) {
+                        $query->whereBetween("{$table}.created_at", [$filters['date_from'], $filters['date_to']]);
+                    }
+                    break;
+
+                    // Add more filter cases as needed
+            }
+        }
+
+        return $query;
+    }
     public function getUsersData(Request $request)
     {
 
@@ -572,22 +605,21 @@ private function applyCommonFilters($query, $filters, $table = 'users')
         $filters = $request->filters;
 
 
-      
+
         // Fetch users based on role
         $users = DB::table('users')
-        ->leftJoin('branches', 'users.branch_id', '=', 'branches.id')
-        ->leftJoin('roles', 'users.role_id', '=', 'roles.id')
-          ->leftJoin('users as admins', 'users.admin_id', '=', 'admins.id')
-        ->select('users.*', 'branches.name as branch_name', 'roles.name as role_name', 'admins.name as admin_name'  )
-        ->where('users.role_id', $roleId)
-        ->whereNotNull('users.branch_id')
-        ->where('users.admin_id', $adminId);
+            ->leftJoin('branches', 'users.branch_id', '=', 'branches.id')
+            ->leftJoin('roles', 'users.role_id', '=', 'roles.id')
+            ->leftJoin('users as admins', 'users.admin_id', '=', 'admins.id')
+            ->select('users.*', 'branches.name as branch_name', 'roles.name as role_name', 'admins.name as admin_name')
+            ->where('users.role_id', $roleId)
+            ->whereNotNull('users.branch_id')
+            ->where('users.admin_id', $adminId);
 
-if ($branchId != -1) {
-    $users->where('users.branch_id', $branchId);
-}
-           $users = $this->applyCommonFilters($users, $filters, 'users')->get();
-      
+        if ($branchId != -1) {
+            $users->where('users.branch_id', $branchId);
+        }
+        $users = $this->applyCommonFilters($users, $filters, 'users')->get();
 
         // // Transform response for consistency
         $data = $users->map(function ($user) {
@@ -603,8 +635,8 @@ if ($branchId != -1) {
                 'admin_id' => $user->admin_name,
                 'branch_id' => $user->branch_name,
                 // 'image' => asset('storage/' . $user->image),
-                'image' => 'http://localhost/library-admin/storage/app/public/'. $user->image,
-             
+                'image' => 'http://localhost/library-admin/storage/app/public/' . $user->image,
+
                 // 'role' => $user->role,
                 'branch_name' => $user->id == $user->branch_id ? 'Admin' : $user->branch_name,
                 'status' => $user->status == 1 ? 'Active' : 'Inactive',
@@ -612,98 +644,196 @@ if ($branchId != -1) {
             ];
         });
 
-      
+
         return response()->json(['status' => true, 'data' => $data, 'message' => 'Users Fetched Successfully'], 200);
     }
 
-    private function getImageUrlIfExists($imagePath)
-{
-    if (empty($imagePath)) {
-        return null;
-    }
+    // get student data
+    public function getStudentsData(Request $request)
+    {
+        $adminId = $request->admin_id;
+        $branchId = $request->branch_id;
+        $filters = $request->filters;
 
-    // Remove storage/app/public/ to get relative path for Storage disk 'public'
-    $relativePath = str_replace('storage/app/public/', '', $imagePath);
+        $students = DB::table('students')
+            ->leftJoin('branches', 'students.branch_id', '=', 'branches.id')
+            ->leftJoin('users as admins', 'students.admin_id', '=', 'admins.id')
+            ->select(
+                'students.*',
+                'branches.name as branch_name',
+                'admins.name as admin_name'
+            )
+            ->where('students.admin_id', $adminId)
+            ->whereNotNull('students.branch_id');
+        if ($branchId != -1) {
+            $students->where('students.branch_id', $branchId);
+        }
+        $students = $this->applyCommonFilters($students, $filters, 'students')->get();
 
-    if (Storage::disk('public')->exists($relativePath)) {
-        return $this->baseImagePath() . $imagePath; // full URL
-    }
-
-    return null; // file does not exist
-}
-    
-public function getUsers(Request $request)
-{
-
-     $selectedBranchId = $request->branch_id;
-    $users = User::leftJoin('roles', 'users.role_id', '=', 'roles.id')
-    ->leftJoin('branches', 'users.branch_id', '=', 'branches.id')
-        ->select('users.*', 'roles.name as role_name','branches.name as branch_name')
-        ->orderBy('id','DESC');
-        
-        if($selectedBranchId != -1)
-        {
-            $users->where('users.branch_id', $selectedBranchId);
-        }   
-        $users = $users->whereNotIn('users.id',[1])->get()
-        ->map(function ($user) {
-            $user->image = $this->getImageUrlIfExists($user->image);
-            return $user;
+        $data = $students->map(function ($student) {
+            return [
+                'id' => $student->id,
+                'name' => $student->name,
+                'enrollment_no' => $student->enrollment_no,
+                'dob' => $student->dob,
+                'mobile' => $student->mobile,
+                'email' => $student->email,
+                'gender' => $student->gender,
+                'admin_id' => $student->admin_name,
+                'branch_id' => $student->branch_name,
+                'image' => $student->image
+                    ? 'http://localhost/library-admin/storage/app/public/' . $student->image
+                    : null,
+                'branch_name' => $student->id == $student->branch_id ? 'Admin' : $student->branch_name,
+                'status' => $student->status == 1 ? 'Active' : 'Inactive',
+            ];
         });
 
-    return response()->json([
-        'status' => true,
-        'data' => $users,
-        'message' => 'Users Fetched Successfully'
-    ]);
-}
-
-     public function checkUnique(Request $request)
-{
-    $username = $request->query('username');
-    $mobile = $request->query('mobile');
-    $email = $request->query('email');
-
-    $response = [];
-
-    if ($username !== null) {
-        $response['usernameExists'] = \App\Models\User::where('username', $username)->exists();
-    }
-    if ($mobile !== null) {
-        $response['mobileExists'] = \App\Models\User::where('mobile', $mobile)->exists();
-    }
-    if ($email !== null) {
-        $response['emailExists'] = \App\Models\User::where('email', $email)->exists();
+        return response()->json([
+            'status' => true,
+            'data' => $data,
+            'message' => 'Students Fetched Successfully'
+        ], 200);
     }
 
-    return response()->json($response);
-}
-public function excelUpload(Request $request, $modal)
-{
-    $modelClass = 'App\\Models\\' . ucfirst($modal);
+    public function getStudents(Request $request)
+    {
+        $selectedBranchId = $request->branch_id;
 
-    if (!class_exists($modelClass)) {
-        return response()->json(['message' => 'Invalid modal provided'], 400);
+        $students = DB::table('students')
+            ->join('users', 'students.user_id', '=', 'users.id')
+            ->leftJoin('branches', 'users.branch_id', '=', 'branches.id')
+            ->select('users.*', 'branches.name as branch_name', 'students.*')
+            ->orderBy('users.id', 'DESC');
+
+        if ($selectedBranchId != -1) {
+            $students->where('users.branch_id', $selectedBranchId);
+        }
+
+        $students = $students->get()
+            ->map(function ($student) {
+                $student->image = $this->getImageUrlIfExists($student->image);
+                return $student;
+            });
+
+
+
+        return response()->json([
+            'status' => true,
+            'data' => $students,
+            'message' => 'Students Fetched Successfully'
+        ]);
+    }
+    
+    // update student data
+    public function updateStudent(Request $request, $id)
+    {
+        $student = Student::find($id);
+
+        if (!$student) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Student not found'
+            ], 404);
+        }
+
+
+
+        $student->update($request->all());
+        return response()->json([
+            'status' => true,
+            'message' => 'Student updated successfully',
+            'data' => $student
+        ], 200);
     }
 
-    // 'users' is expected JSON string containing array of users
-    $usersData = $request->input('users');
-    if (!$usersData) {
-        return response()->json(['message' => 'No users data provided'], 422);
+    private function getImageUrlIfExists($imagePath)
+    {
+        if (empty($imagePath)) {
+            return null;
+        }
+
+        // Remove storage/app/public/ to get relative path for Storage disk 'public'
+        $relativePath = str_replace('storage/app/public/', '', $imagePath);
+
+        if (Storage::disk('public')->exists($relativePath)) {
+            return $this->baseImagePath() . $imagePath; // full URL
+        }
+
+        return null; // file does not exist
     }
 
-    $dataList = json_decode($usersData, true);
+    public function getUsers(Request $request)
+    {
 
-    if (!is_array($dataList) || empty($dataList)) {
-        return response()->json(['message' => 'Invalid or empty users data'], 422);
+        $selectedBranchId = $request->branch_id;
+        $users = User::leftJoin('roles', 'users.role_id', '=', 'roles.id')
+            ->leftJoin('branches', 'users.branch_id', '=', 'branches.id')
+            ->select('users.*', 'roles.name as role_name', 'branches.name as branch_name')
+            ->orderBy('id', 'DESC');
+
+        if ($selectedBranchId != -1) {
+            $users->where('users.branch_id', $selectedBranchId);
+        }
+        $users = $users->whereNotIn('users.id', [1])->get()
+            ->map(function ($user) {
+                $user->image = $this->getImageUrlIfExists($user->image);
+                return $user;
+            });
+
+        return response()->json([
+            'status' => true,
+            'data' => $users,
+            'message' => 'Users Fetched Successfully'
+        ]);
     }
 
-    try {
-        foreach ($dataList as $index =>  $data) {
-            // If you want to handle files per user, get them from $request->file() here
+    public function checkUnique(Request $request)
+    {
+        $username = $request->query('username');
+        $mobile = $request->query('mobile');
+        $email = $request->query('email');
 
-  
-           
+        $response = [];
+
+        if ($username !== null) {
+            $response['usernameExists'] = \App\Models\User::where('username', $username)->exists();
+        }
+        if ($mobile !== null) {
+            $response['mobileExists'] = \App\Models\User::where('mobile', $mobile)->exists();
+        }
+        if ($email !== null) {
+            $response['emailExists'] = \App\Models\User::where('email', $email)->exists();
+        }
+
+        return response()->json($response);
+    }
+    public function excelUpload(Request $request, $modal)
+    {
+        $modelClass = 'App\\Models\\' . ucfirst($modal);
+
+        if (!class_exists($modelClass)) {
+            return response()->json(['message' => 'Invalid modal provided'], 400);
+        }
+
+        // 'users' is expected JSON string containing array of users
+        $usersData = $request->input('users');
+        if (!$usersData) {
+            return response()->json(['message' => 'No users data provided'], 422);
+        }
+
+        $dataList = json_decode($usersData, true);
+
+        if (!is_array($dataList) || empty($dataList)) {
+            return response()->json(['message' => 'Invalid or empty users data'], 422);
+        }
+
+        try {
+            foreach ($dataList as $index =>  $data) {
+                // If you want to handle files per user, get them from $request->file() here
+
+
+
                 // Check for uploaded file in current record
                 $fileKey = "file_{$index}_image";
                 if ($request->hasFile($fileKey)) {
@@ -711,56 +841,55 @@ public function excelUpload(Request $request, $modal)
                     $data['image'] = $this->handleFileUpload($file, strtolower($modal));
                 }
 
-            
-            $model = new $modelClass();
-            $model->fill($data);
-            $model->save();
-        }
 
-        return response()->json(['message' => 'Users uploaded successfully']);
-    } catch (\Exception $e) {
-        return response()->json(['message' => 'Upload failed', 'error' => $e->getMessage()], 500);
+                $model = new $modelClass();
+                $model->fill($data);
+                $model->save();
+            }
+
+            return response()->json(['message' => 'Users uploaded successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Upload failed', 'error' => $e->getMessage()], 500);
+        }
     }
-}
 
 
     public function getBranches(Request $request)
     {
-$user = auth()->user();
-     
+        $user = auth()->user();
+
         $selectedBranchId = $request->branch_id;
         // Fetch users based on role
         $branches = Branch::query();
         if ($user->role_id != 1) {
             $branches->where('id', $user->branch_id);
         }
-        
+
         $branches = $branches->get();
         return response()->json(['status' => true, 'data' => $branches, 'message' => 'Branches Fetched Successfully'], 200);
     }
     public function getRoles(Request $request)
     {
         // Fetch users based on role
-        $roles = Role::where('id','!=',1)->get();
+        $roles = Role::where('id', '!=', 1)->get();
 
-       
+
 
         return response()->json(['status' => true, 'data' => $roles, 'message' => 'Roles Fetched Successfully'], 200);
     }
     public function getColumns(Request $request)
     {
 
-         $roleId = $request->role_id;
-            $adminId = $request->admin_id;
-            $branchId = $request->branch_id;
+        $roleId = $request->role_id;
+        $adminId = $request->admin_id;
+        $branchId = $request->branch_id;
         // Fetch users based on role
-        $branches = RoleInputAssignment::
-        where('admin_id',$adminId)
-        ->where('branch_id',$branchId)
-        ->where('role_id',$roleId)
-        ->get();
+        $branches = RoleInputAssignment::where('admin_id', $adminId)
+            ->where('branch_id', $branchId)
+            ->where('role_id', $roleId)
+            ->get();
 
-       
+
 
         return response()->json(['status' => true, 'data' => $branches, 'message' => 'Branches Fetched Successfully'], 200);
     }
@@ -779,7 +908,7 @@ $user = auth()->user();
     //         if (!$user) {
     //             return response()->json(['error' => 'User not found.'], 404);
     //         }
-    
+
     //         // If user has role_id = 1, fetch all menus
     //         if ($user->role_id == 1) {
     //             $menus = Menu::whereNull('parent_id') // Fetch only main menus
@@ -799,11 +928,11 @@ $user = auth()->user();
     //                 }])
     //                 ->get();
     //         }
-    
+
     //         if ($menus->isEmpty()) {
     //             return response()->json(['error' => 'No menus found for this user.'], 404);
     //         }
-    
+
     //         // Format response with route URLs
     //         $menuList = $menus->map(function ($menu) {
     //             return [
@@ -823,7 +952,7 @@ $user = auth()->user();
     //                 }),
     //             ];
     //         });
-    
+
     //         return response()->json($menuList);
     //     } catch (Exception $e) {
     //         Log::error('Sidebar Fetch Error: ' . $e->getMessage());
@@ -832,68 +961,68 @@ $user = auth()->user();
     // }
 
 
-  public function menusForSetPermission(Request $request)
-{
-    $roleId = $request->role_id ?? '';
-    $userId = $request->user_id ?? '';
+    public function menusForSetPermission(Request $request)
+    {
+        $roleId = $request->role_id ?? '';
+        $userId = $request->user_id ?? '';
 
-    $permissions = collect(); // default empty collection
+        $permissions = collect(); // default empty collection
 
-    if (!empty($userId)) {
-        // Try fetching user-specific permissions
-        $permissions = UserPermission::where('user_id', $userId)->pluck('permission');
+        if (!empty($userId)) {
+            // Try fetching user-specific permissions
+            $permissions = UserPermission::where('user_id', $userId)->pluck('permission');
 
-        // If user-specific permissions are empty, fallback to role-based
-        if ($permissions->isEmpty() && !empty($roleId)) {
+            // If user-specific permissions are empty, fallback to role-based
+            if ($permissions->isEmpty() && !empty($roleId)) {
+                $permissions = RolePermission::where('role_id', $roleId)->pluck('permission');
+            }
+        } elseif (!empty($roleId)) {
+            // No user ID, fallback to role-based permissions
             $permissions = RolePermission::where('role_id', $roleId)->pluck('permission');
         }
-    } elseif (!empty($roleId)) {
-        // No user ID, fallback to role-based permissions
-        $permissions = RolePermission::where('role_id', $roleId)->pluck('permission');
-    }
 
-    // Fetch all sidebar menus
-    $getAllMenus = Helper::allSidebarMenus();
+        // Fetch all sidebar menus
+        $getAllMenus = Helper::allSidebarMenus();
 
-    if (!$getAllMenus) {
+        if (!$getAllMenus) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Menu not found',
+            ], 404);
+        }
+
         return response()->json([
-            'status' => false,
-            'message' => 'Menu not found',
-        ], 404);
+            'status' => true,
+            'data' => $getAllMenus,
+            'permissions' => $permissions,
+        ]);
     }
-
-    return response()->json([
-        'status' => true,
-        'data' => $getAllMenus,
-        'permissions' => $permissions,
-    ]);
-}
 
     public function getSidebarByUser($userId)
-{
-    $user = User::find($userId);
+    {
+        $user = User::find($userId);
 
-    if (!$user) {
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'User not found',
+            ], 404);
+        }
+
+        $sidebar = Helper::getSidebar($user);
+
         return response()->json([
-            'status' => false,
-            'message' => 'User not found',
-        ], 404);
+            'status' => true,
+            'data' => $sidebar
+        ]);
     }
-
-    $sidebar = Helper::getSidebar($user);
-
-    return response()->json([
-        'status' => true,
-        'data' => $sidebar
-    ]);
-}
 
     // public function getFormFields()
     // {
     //     try {
     //         $adminId = 1;
     //         $roleId =5;
-    
+
     //         // Fetch allowed form fields for given admin_id and role_id
     //         $allowedFields = AllowedFormField::with('formField')
     //             ->where('admin_id', $adminId)
@@ -902,13 +1031,13 @@ $user = auth()->user();
     //             ->pluck('formField') // extract form field details only
     //             ->filter() // remove any nulls (if foreign key was broken)
     //             ->values(); // reset keys
-    
+
     //         return response()->json([
     //             'status' => true,
     //             'data' => $allowedFields,
     //             'message' => 'Form fields fetched successfully',
     //         ], 200);
-    
+
     //     } catch (Exception $e) {
     //         return response()->json([
     //             'status' => false,
@@ -921,12 +1050,8 @@ $user = auth()->user();
     private function parseJson($value)
     {
         if (!$value) return null;
-    
+
         $decoded = json_decode($value, true);
         return json_last_error() === JSON_ERROR_NONE ? $decoded : $value;
     }
-    
-
-   
-
 }
