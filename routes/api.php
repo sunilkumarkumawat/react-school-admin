@@ -83,6 +83,7 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::post('role', [ApiController::class, 'createRole']);
     Route::put('role/{id}', [ApiController::class, 'updateRole']);
+    Route::delete('deleteFeesGroup/{id}', [ApiController::class, 'deleteFeesGroup']);
     Route::post('getRoles', [ApiController::class, 'getRoles']);
     
     Route::post('user', [ApiController::class, 'createUser']);
@@ -92,5 +93,9 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('student', [ApiController::class, 'createStudent']);
   Route::post('getStudents', [ApiController::class, 'getStudents']);
   Route::put('student/{id}', [ApiController::class, 'updateStudent']);
+
+  Route::post('feesGroup', [ApiController::class, 'createFeesGroup']);
+    Route::put('feesGroup/{id}', [ApiController::class, 'updateFeesGroup']);
+    Route::post('getFeesGroup', [ApiController::class, 'getFeesGroup']);
     
 });

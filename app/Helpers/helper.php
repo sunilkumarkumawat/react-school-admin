@@ -120,6 +120,35 @@ $sidebarMenu = [
         'icon' => 'money-bill-wave', // Google Material Symbol
         'route' => 'expense',
     ],
+     [
+        'title' => 'Fees Management',
+        'className' => 'fees_management',
+        'status' => true,
+        'icon' => 'payments', // Material Symbol
+        'subItems' => [
+            [
+                'title' => 'Add Student',
+                'className' => 'fees_management.add',
+                'status' => true,
+                'route' => 'studentAdd',
+                'icon' => 'person_add', // Material Symbol
+            ],
+            [
+                'title' => 'View Student',
+                'className' => 'fees_management.view',
+                'status' => true,
+                'route' => 'studentView',
+                'icon' => 'visibility', // Material Symbol
+            ],
+            [
+                'title' => 'Id & Password',
+                'className' => 'fees_management.credentials',
+                'status' => true,
+                'route' => 'studentCredentials',
+                'icon' => 'key', // Material Symbol
+            ],
+        ],
+    ],
   
 ];
 

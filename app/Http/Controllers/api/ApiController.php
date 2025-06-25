@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Student;
 use App\Models\Menu;
 use App\Models\Role;
+use App\Models\FeesGroup;
 use App\Models\Branch;
 use App\Models\InputField;
 // use App\Models\FormField;
@@ -1053,5 +1054,75 @@ class ApiController extends Controller
 
         $decoded = json_decode($value, true);
         return json_last_error() === JSON_ERROR_NONE ? $decoded : $value;
+    }
+
+    public function createFeesGroup(Request $request)
+    {
+        $data = $request->all();
+
+        // ✅ Create role using only role-specific data
+        $fees_group = FeesGroup::create($data);
+
+
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Fees Group created successfully',
+            'data' => $fees_group
+        ], 201);
+    }
+
+    // Update an existing branch
+    public function updateFeesGroup(Request $request, $id)
+    {
+        $fees_group = FeesGroup::find($id);
+
+        if (!$fees_group) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Fees Group not found'
+            ], 404);
+        }
+
+
+
+        $fees_group->update($request->all());
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Fees Group updated successfully',
+            'data' => $fees_group
+        ], 200);
+    }
+    public function deleteFeesGroup($id)
+    {
+        $fees_group = FeesGroup::find($id);
+
+        if (!$fees_group) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Fees Group not found'
+            ], 404);
+        }
+
+
+
+        $fees_group->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Fees Group Deleted successfully',
+            'data' => $fees_group
+        ], 200);
+    }
+
+    public function getFeesGroup(Request $request)
+    {
+        // Fetch users based on role
+        $fees_group = FeesGroup::all();
+
+
+
+        return response()->json(['status' => true, 'data' => $fees_group, 'message' => 'Fees Group Successfully'], 200);
     }
 }
