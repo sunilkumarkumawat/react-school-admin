@@ -124,17 +124,17 @@ $sidebarMenu = [
         'title' => 'Fees Management',
         'className' => 'fees_management',
         'status' => true,
-        'icon' => 'payments', // Material Symbol
+        'icon' => 'money-bill-wave', // Material Symbol
         'subItems' => [
             [
-                'title' => 'Add Student',
+                'title' => 'Fees Group',
                 'className' => 'fees_management.add',
                 'status' => true,
-                'route' => 'studentAdd',
+                'route' => 'feesGroup',
                 'icon' => 'person_add', // Material Symbol
             ],
             [
-                'title' => 'View Student',
+                'title' => 'Fees Type',
                 'className' => 'fees_management.view',
                 'status' => true,
                 'route' => 'studentView',
