@@ -95,7 +95,10 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::put('student/{id}', [ApiController::class, 'updateStudent']);
 
   Route::post('feesGroup', [ApiController::class, 'createFeesGroup']);
-    Route::put('feesGroup/{id}', [ApiController::class, 'updateFeesGroup']);
-    Route::post('getFeesGroup', [ApiController::class, 'getFeesGroup']);
+  Route::put('feesGroup/{id}', [ApiController::class, 'updateFeesGroup']);
+  Route::post('getFeesGroup', [ApiController::class, 'getFeesGroup']);
+
+
+  Route::post('saveFcmToken/{id}', [ApiController::class, 'saveFcmToken']);
     
 });

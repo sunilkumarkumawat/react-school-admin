@@ -1125,4 +1125,39 @@ class ApiController extends Controller
 
         return response()->json(['status' => true, 'data' => $fees_group, 'message' => 'Fees Group Successfully'], 200);
     }
+
+   public function saveFcmToken(Request $request, $id)
+    {
+            try {
+
+
+            $user = User::find($id);
+
+            if (!$user) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'User not found'
+                ], 404);
+            }
+
+            $user->update([
+                'fcm_token' => $request->fcm_token
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'FCM Token saved successfully',
+                'data' => $user
+            ], 200);
+        } catch (\Throwable $e) {
+            Log::error('FCM Token Save Error', ['error' => $e->getMessage()]);
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    
+
 }

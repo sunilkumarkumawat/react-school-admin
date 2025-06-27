@@ -25,6 +25,7 @@ class User extends Authenticatable
         'branch_id',
         'role_id',
         'auth_provider',
+        'fcm_token',
         'username',
         'confirm_password',
         'name',
