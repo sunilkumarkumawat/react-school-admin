@@ -53,7 +53,8 @@ Route::post('getRoleInputAssignments', [ApiController::class, 'getRoleInputAssig
 Route::match(['get', 'post'], 'appData', [AuthController::class, 'appDataApi']);
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 Route::get('formFields', [ApiController::class, 'getFormFields']);
-
+// Route::post('firebaseMessageApi', [ApiController::class, 'firebaseMessageApi']);
+Route::get('getFcmToken', [ApiController::class, 'getFcmToken']);
 
 // // Branches resource routes with auth:sanctum middleware
 Route::middleware('auth:sanctum')->group(function () {
@@ -100,5 +101,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
   Route::post('saveFcmToken/{id}', [ApiController::class, 'saveFcmToken']);
-    
+   
 });

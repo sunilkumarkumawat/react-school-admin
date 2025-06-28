@@ -1158,6 +1158,29 @@ class ApiController extends Controller
             ], 500);
         }
     }
+
+//     public function firebaseMessageApi()
+// {
+//     $response = Helper::sendFirebaseMessage();
+//     return response()->json($response);
+// }
+
+public function getFcmToken()
+{
+    try {
+        $fcmTokens = User::whereNotNull('fcm_token')->pluck('fcm_token');
+        return response()->json([
+            'status' => true,
+            'tokens' => $fcmTokens
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }
+}
+
     
 
 }

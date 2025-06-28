@@ -496,6 +496,43 @@ public static function getSidebar5($id1, $id2, $id3, $id4){
         
    }
 
+   public static function sendFirebaseMessage()
+{
+    $params = [
+        'text' => 'Hello from Postman prashant',
+        'senderId' => 'admin123',
+        'schoolId' => 'school_001',
+        'receiverType' => 'all',
+        'fcmTokens' => [
+            "c9gmfwvdrJ1DlbTUn2d17R:APA91bH-a4kVjIjD42vs0Jp9wU8W0L0tZ7j1TyDTKoFzZOSNekGSWeHEwn1QA5UFYCUuijN6VOb8pLkJ9zw8TEqwXXoQ5HVXPJ-oCWxrVOhH8GwBj2HkL2A"
+        ]
+    ];
+
+    try {
+        $response = Http::post('https://socket.rusofterp.in/api/chat/send', $params);
+
+        if ($response->successful()) {
+            return [
+                'status' => 'success',
+                'response' => $response->body()
+            ];
+        } else {
+            return [
+                'status' => 'error',
+                'message' => 'API Error',
+                'response' => $response->body()
+            ];
+        }
+
+    } catch (\Exception $e) {
+        return [
+            'status' => 'error',
+            'message' => 'Request Failed: ' . $e->getMessage()
+        ];
+    }
+}
+
+
 }
 
 
