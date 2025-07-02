@@ -137,14 +137,14 @@ $sidebarMenu = [
                 'title' => 'Fees Type',
                 'className' => 'fees_management.view',
                 'status' => true,
-                'route' => 'studentView',
+                'route' => 'feesType',
                 'icon' => 'visibility', // Material Symbol
             ],
             [
-                'title' => 'Id & Password',
+                'title' => 'Fees Master',
                 'className' => 'fees_management.credentials',
                 'status' => true,
-                'route' => 'studentCredentials',
+                'route' => 'feesMaster',
                 'icon' => 'key', // Material Symbol
             ],
         ],

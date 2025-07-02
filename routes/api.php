@@ -99,6 +99,11 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::put('feesGroup/{id}', [ApiController::class, 'updateFeesGroup']);
   Route::post('getFeesGroup', [ApiController::class, 'getFeesGroup']);
 
+  Route::post('feesType', [ApiController::class, 'createFeesType']);
+  Route::put('feesType/{id}', [ApiController::class, 'updateFeesType']);
+  Route::post('getFeesType', [ApiController::class, 'getFeesType']);
+  Route::delete('deleteFeesType/{id}', [ApiController::class, 'deleteFeesType']);
+
 
   Route::post('saveFcmToken/{id}', [ApiController::class, 'saveFcmToken']);
    

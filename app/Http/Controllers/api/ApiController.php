@@ -8,6 +8,7 @@ use App\Models\Student;
 use App\Models\Menu;
 use App\Models\Role;
 use App\Models\FeesGroup;
+use App\Models\FeesType;
 use App\Models\Branch;
 use App\Models\InputField;
 // use App\Models\FormField;
@@ -1159,11 +1160,76 @@ class ApiController extends Controller
         }
     }
 
-//     public function firebaseMessageApi()
-// {
-//     $response = Helper::sendFirebaseMessage();
-//     return response()->json($response);
-// }
+    public function createFeesType(Request $request){
+        $data = $request->all();
+
+        // ✅ Create role using only role-specific data
+        $fees_Type = FeesType::create($data);
+
+
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Fees Type created successfully',
+            'data' => $fees_Type
+        ], 201);
+    }
+
+     public function updateFeesType(Request $request, $id)
+    {
+        $fees_Type = FeesType::find($id);
+
+        if (!$fees_Type) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Fees Type not found'
+            ], 404);
+        }
+
+
+
+        $fees_Type->update($request->all());
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Fees Type updated successfully',
+            'data' => $fees_Type
+        ], 200);
+    }
+   
+
+    public function getFeesType(Request $request)
+    {
+        // Fetch users based on role
+       $fees_Type = DB::table('fees_types')
+        ->select('fees_types.id', 'fees_types.name', 'fees_groups.name as fees_groups_name','fees_types.fees_group_id')
+        ->leftJoin('fees_groups', 'fees_types.fees_group_id', '=', 'fees_groups.id')
+        ->get();
+
+
+
+
+        return response()->json(['status' => true, 'data' => $fees_Type, 'message' => 'Fees Type Successfully'], 200);
+    }
+
+    public function deleteFeesType($id){
+        $fees_Type = FeesType::find($id);
+
+        if (!$fees_Type) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Fees Type not found'
+            ], 404);
+        }
+
+        $fees_Type->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Fees Type Deleted successfully',
+            'data' => $fees_Type
+        ], 200);
+    }
 
 public function getFcmToken()
 {
