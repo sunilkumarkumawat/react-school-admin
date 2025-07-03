@@ -9,6 +9,7 @@ use App\Models\Menu;
 use App\Models\Role;
 use App\Models\FeesGroup;
 use App\Models\FeesType;
+use App\Models\FeesMaster;
 use App\Models\Branch;
 use App\Models\InputField;
 // use App\Models\FormField;
@@ -1247,6 +1248,110 @@ public function getFcmToken()
     }
 }
 
-    
+      public function createFeesMaster(Request $request){
+        $data = $request->input('fees'); // only the "fees" array
+        foreach ($data as $entry) {
+            $classId = $entry['class_id'];
+
+            foreach ($entry['fee_types'] as $type) {
+                FeesMaster::create([
+                    'class_type_id'      => $classId,
+                    'fees_group_id' => $type['fees_group_id'],
+                    'fees_type_id'  => $type['id'],
+                    'amount'        => $type['amount'],
+                    'installment_due_date'  => $type['due_date'],
+                ]);
+            }
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Fees Master created successfully',
+            'data' => $data
+        ], 201);
+    }
+
+    public function getFeesMaster(Request $request)
+    {
+        $rawData = DB::table('fees_masters')
+            ->select(
+                'fees_masters.id',
+                'fees_masters.class_type_id',
+                'fees_groups.id as fees_group_id',
+                'fees_groups.name as fees_group_name',
+                'fees_types.id as fees_type_id',
+                'fees_types.name as fees_type_name',
+                'fees_masters.amount',
+                'fees_masters.installment_due_date',
+                'fees_masters.created_at'
+            )
+            ->leftJoin('fees_groups', 'fees_masters.fees_group_id', '=', 'fees_groups.id')
+            ->leftJoin('fees_types', 'fees_masters.fees_type_id', '=', 'fees_types.id')
+            ->orderBy('fees_masters.class_type_id')
+            ->get();
+
+        // Group by class_id
+        $grouped = [];
+
+        foreach ($rawData as $row) {
+            $classId = $row->class_type_id;
+
+            if (!isset($grouped[$classId])) {
+                $grouped[$classId] = [
+                    'id' => $row->id,
+                    'class_id' => $classId,
+                    'groups' => [],
+                    'fee_types' => [],
+                    'total_amount' => 0,
+                    'created_at' => $row->created_at,
+                ];
+            }
+
+            // Add fee group if not already added
+            if (!in_array($row->fees_group_name, array_column($grouped[$classId]['groups'], 'name'))) {
+                $grouped[$classId]['groups'][] = [
+                    'id' => $row->fees_group_id,
+                    'name' => $row->fees_group_name,
+                ];
+            }
+
+            // Add fee type
+            $grouped[$classId]['fee_types'][] = [
+                'group_name' => $row->fees_group_name,
+                'type_name' => $row->fees_type_name,
+                'amount' => $row->amount,
+                'due_date' => $row->installment_due_date,
+            ];
+
+            $grouped[$classId]['total_amount'] += $row->amount;
+        }
+
+        $final = array_values($grouped);
+
+        return response()->json([
+            'status' => true,
+            'data' => $final,
+            'message' => 'Fees Master fetched successfully',
+        ]);
+    }
+
+     public function deleteFeesMaster($id){
+        $fees_Master = FeesMaster::find($id);
+
+        if (!$fees_Master) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Fees Master not found'
+            ], 404);
+        }
+
+        $fees_Master->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Fees Master Deleted successfully',
+            'data' => $fees_Master
+        ], 200);
+    }
 
 }
