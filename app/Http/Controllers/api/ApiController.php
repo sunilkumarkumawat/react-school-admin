@@ -11,6 +11,7 @@ use App\Models\FeesGroup;
 use App\Models\FeesType;
 use App\Models\FeesMaster;
 use App\Models\Branch;
+use App\Models\Classes;
 use App\Models\InputField;
 // use App\Models\FormField;
 // use App\Models\AllowedFormField;
@@ -1354,4 +1355,63 @@ public function getFcmToken()
         ], 200);
     }
 
+    public function createClass(Request $request)
+    {
+        $data = $request->all();
+
+        // ✅ Create role using only role-specific data
+        $class = Classes::create($data);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Class created successfully',
+            'data' => $class
+        ], 201);
+    }
+
+    // Update an existing branch
+    public function updateClass(Request $request, $id)
+    {
+        $class = Classes::find($id);
+
+        if (!$class) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Class not found'
+            ], 404);
+        }
+
+        $class->update($request->all());
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Class updated successfully',
+            'data' => $class
+        ], 200);
+    }
+    public function deleteClass($id)
+    {
+        $class = Classes::find($id);
+
+        if (!$class) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Class not found'
+            ], 404);
+        }
+
+        $class->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Class Deleted successfully',
+            'data' => $class
+        ], 200);
+    }
+
+    public function getClass(Request $request)
+    {
+        $class = Classes::all();
+        return response()->json(['status' => true, 'data' => $class, 'message' => 'Class Successfully'], 200);
+    }
 }

@@ -149,6 +149,21 @@ $sidebarMenu = [
             ],
         ],
     ],
+     [
+        'title' => 'Master',
+        'className' => 'master',
+        'status' => true,
+        'icon' => 'network-wired', // Material Symbol
+        'subItems' => [
+            [
+                'title' => 'Class',
+                'className' => 'master.class',
+                'status' => true,
+                'route' => 'class',
+                'icon' => 'network-wired', // Material Symbol
+            ]
+        ],
+    ],
   
 ];
 

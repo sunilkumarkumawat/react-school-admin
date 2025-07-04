@@ -108,6 +108,11 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::post('getFeesMaster', [ApiController::class, 'getFeesMaster']);
   Route::delete('deleteFeesMaster/{id}', [ApiController::class, 'deleteFeesMaster']);
 
+  Route::post('class', [ApiController::class, 'createClass']);
+  Route::put('class/{id}', [ApiController::class, 'updateClass']);
+  Route::post('getClass', [ApiController::class, 'getClass']);
+  Route::delete('deleteClass/{id}', [ApiController::class, 'deleteClass']);
+
   Route::post('saveFcmToken/{id}', [ApiController::class, 'saveFcmToken']);
    
 });
