@@ -117,51 +117,138 @@ $sidebarMenu = [
         'title' => 'Expense',
         'className' => 'Expense.view',
         'status' => true,
-        'icon' => 'money-bill-wave', // Google Material Symbol
+        'icon' => 'money-bill-wave',
         'route' => 'expense',
     ],
      [
         'title' => 'Fees Management',
         'className' => 'fees_management',
         'status' => true,
-        'icon' => 'money-bill-wave', // Material Symbol
+        'icon' => 'money-bill-wave',
         'subItems' => [
             [
                 'title' => 'Fees Group',
                 'className' => 'fees_management.add',
                 'status' => true,
                 'route' => 'feesGroup',
-                'icon' => 'person_add', // Material Symbol
+                'icon' => 'person_add',
             ],
             [
                 'title' => 'Fees Type',
                 'className' => 'fees_management.view',
                 'status' => true,
                 'route' => 'feesType',
-                'icon' => 'visibility', // Material Symbol
+                'icon' => 'visibility',
             ],
             [
                 'title' => 'Fees Master',
                 'className' => 'fees_management.credentials',
                 'status' => true,
                 'route' => 'feesMaster',
-                'icon' => 'key', // Material Symbol
+                'icon' => 'key',
+            ],
+            [
+                'title' => 'Collect Fees',
+                'className' => 'fees_management.feesCollect',
+                'status' => true,
+                'route' => 'feesCollect',
+                'icon' => 'key',
+            ],
+            [
+                'title' => 'Fees Receipts',
+                'className' => 'fees_management.feesReceipts',
+                'status' => true,
+                'route' => 'feesReceipts',
+                'icon' => 'key',
             ],
         ],
     ],
-     [
+    [
         'title' => 'Master',
         'className' => 'master',
         'status' => true,
-        'icon' => 'network-wired', // Material Symbol
+        'icon' => 'network-wired',
         'subItems' => [
             [
                 'title' => 'Class',
                 'className' => 'master.class',
                 'status' => true,
                 'route' => 'class',
-                'icon' => 'network-wired', // Material Symbol
-            ]
+                'icon' => 'network-wired',
+            ],
+            [
+                'title' => 'Academic Calendar',
+                'className' => 'master.calender',
+                'status' => true,
+                'route' => 'academicCalendar',
+                'icon' => 'network-wired',
+            ],
+            [
+                'title' => 'Add Subject',
+                'className' => 'master.subject',
+                'status' => true,
+                'route' => 'subjectAdd',
+                'icon' => 'network-wired',
+            ],
+            [
+                'title' => 'Assign Subject',
+                'className' => 'master.assignSubject',
+                'status' => true,
+                'route' => 'subjectAssign',
+                'icon' => 'network-wired',
+            ],
+            [
+                'title' => 'Add Sessons',
+                'className' => 'master.addSession',
+                'status' => true,
+                'route' => 'sessionAdd',
+                'icon' => 'network-wired',
+            ],
+
+        ],
+    ],
+    [
+        'title' => 'Examination',
+        'className' => 'examination',
+        'status' => true,
+        'icon' => 'network-wired',
+        'subItems' => [
+            [
+                'title' => 'Create Exam',
+                'className' => 'examination.examCreate',
+                'status' => true,
+                'route' => 'exam',
+                'icon' => 'network-wired',
+            ],
+            [
+                'title' => 'Examination Schedule',
+                'className' => 'master.calender',
+                'status' => true,
+                'route' => 'academicCalendar',
+                'icon' => 'network-wired',
+            ],
+            [
+                'title' => 'Add Subject',
+                'className' => 'master.subject',
+                'status' => true,
+                'route' => 'subjectAdd',
+                'icon' => 'network-wired',
+            ],
+            [
+                'title' => 'Assign Subject',
+                'className' => 'master.assignSubject',
+                'status' => true,
+                'route' => 'subjectAssign',
+                'icon' => 'network-wired',
+            ],
+            [
+                'title' => 'Add Sessons',
+                'className' => 'master.addSession',
+                'status' => true,
+                'route' => 'sessionAdd',
+                'icon' => 'network-wired',
+            ],
+
         ],
     ],
   
